@@ -518,6 +518,32 @@ body {
   cursor: not-allowed;
 }
 
+.cta-section {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--accent-green), #00b894);
+  color: var(--bg-primary);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
+}
+
+.cta-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(0, 212, 170, 0.5);
+}
+
 @media (max-width: 480px) {
   .main {
     padding: 16px;

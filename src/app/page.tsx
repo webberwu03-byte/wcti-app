@@ -676,6 +676,12 @@ ${result.traits.map(t => '• ' + t).join('\n')}
             <span>📋</span> 复制文案
           </button>
         </div>
+
+        <div className="cta-section">
+          <a href="/" className="cta-btn">
+            <span>⚽</span> 我也来测试
+          </a>
+        </div>
       </div>
     );
   }
