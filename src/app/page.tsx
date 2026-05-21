@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import styles from './page.module.css';
 
 // F = Fan 观赛方式, C = Crazy 混乱程度, E = Evaluate 分析方式, I = Identity 球迷身份
@@ -482,7 +483,34 @@ export default function Home() {
   }
 
   async function shareScreenshot() {
-    alert('截图分享功能开发中...');
+    const resultEl = document.querySelector('.result-page') as HTMLElement;
+    if (!resultEl) {
+      alert('截图功能暂时不可用，请稍后重试');
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(resultEl, {
+        backgroundColor: '#0a0a1a',
+        scale: 2,
+        useCORS: true,
+        logging: false
+      });
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `WCTI_${resultCode}.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error('截图失败:', err);
+      alert('截图失败，请稍后重试');
+    }
   }
 
   function copyToClipboard() {
