@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import QRCode from 'qrcode';
 import styles from './page.module.css';
 
 // F = Fan 观赛方式, C = Crazy 混乱程度, E = Evaluate 分析方式, I = Identity 球迷身份
@@ -496,6 +497,20 @@ export default function Home() {
         useCORS: true,
         logging: false
       });
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        const qrCanvas = document.createElement('canvas');
+        const qrSize = 90;
+        qrCanvas.width = qrSize;
+        qrCanvas.height = qrSize;
+        await QRCode.toCanvas(qrCanvas, 'https://wcti-app.vercel.app', {
+          width: qrSize,
+          margin: 1,
+          color: { dark: '#ffffff', light: '#0a0a1a' }
+        });
+        ctx.drawImage(qrCanvas, canvas.width - 110, canvas.height - 110, 90, 90);
+      }
 
       canvas.toBlob((blob) => {
         if (blob) {
