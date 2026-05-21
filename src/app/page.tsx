@@ -461,15 +461,13 @@ export default function Home() {
   }
 
   function calculateResult(finalScores: typeof scores) {
-    const fScore = finalScores.F;
-    const cScore = finalScores.C;
-    const eScore = finalScores.E;
-    const iScore = finalScores.I;
+    const scores = [finalScores.F, finalScores.C, finalScores.E, finalScores.I].sort((a, b) => a - b);
+    const median = (scores[1] + scores[2]) / 2;
 
-    const fChar = fScore >= 3 ? 'F' : 'f';
-    const cChar = cScore >= 3 ? 'C' : 'c';
-    const eChar = eScore >= 3 ? 'E' : 'e';
-    const iChar = iScore >= 3 ? 'I' : 'i';
+    const fChar = finalScores.F >= median ? 'F' : 'f';
+    const cChar = finalScores.C >= median ? 'C' : 'c';
+    const eChar = finalScores.E >= median ? 'E' : 'e';
+    const iChar = finalScores.I >= median ? 'I' : 'i';
 
     const code = fChar + cChar + eChar + iChar;
     setResultCode(code);
