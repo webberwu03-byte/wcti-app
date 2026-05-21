@@ -544,6 +544,30 @@ body {
   box-shadow: 0 6px 30px rgba(0, 212, 170, 0.5);
 }
 
+.retake-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 20px;
+  font-family: inherit;
+}
+
+.retake-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+}
+
 @media (max-width: 480px) {
   .main {
     padding: 16px;

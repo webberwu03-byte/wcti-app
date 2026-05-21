@@ -623,6 +623,9 @@ ${result.traits.map(t => '• ' + t).join('\n')}
           <div className="result-code">{resultCode}</div>
           <div className="result-name">{result.name}</div>
           <div className="result-tagline">{result.tagline}</div>
+          <button className="retake-btn" onClick={() => { setPageState('start'); setCurrentQuestion(0); setScores({ F: 0, C: 0, E: 0, I: 0 }); }}>
+            <span>🔄</span> 不满意？重新测试
+          </button>
         </div>
 
         <div className="result-section">
