@@ -5,156 +5,145 @@ import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import styles from './page.module.css';
 
-// T=Tactical 战术型, t=tabloid 花边型
-// P=Passionate 激情型, p=passive 淡定型
-// A=Analytical 分析型, m=mystical 玄学型
-// D=Diehard 球痴型, d=dilettante 路人型
+// 16种人格，每题直接对应一个人格代码
+// 16 questions × 4 options = 64 total mappings
+// Each personality code appears exactly 16 times (once per question)
 
 const questions = [
-  {
-    question: "世界杯揭幕战，你会怎么获取资讯？",
-    options: [
-      { text: "先看首发阵型图，边看边分析战术思路", type: ["T", "D"] },
-      { text: "等赛后集锦，直接看进球和搞笑片段", type: ["t", "p"] },
-      { text: "熬夜等全程直播，一场不落", type: ["P", "D"] },
-      { text: "第二天刷新闻看战报，了解个大概", type: ["p", "d"] }
-    ]
-  },
-  {
-    question: "主队被绝杀那一刻，你在干嘛？",
-    options: [
-      { text: "捂嘴深呼吸，怕吼出来吓到邻居", type: ["D", "p"] },
-      { text: "发一条「虽败犹荣」的朋友圈假装淡定", type: ["d", "t"] },
-      { text: "对着电视狂喊黑哨，然后摔遥控器", type: ["P", "m"] },
-      { text: "默默关掉电视，心算出线条件", type: ["A", "p"] }
-    ]
-  },
-  {
-    question: "你买足球彩票的原因是？",
-    options: [
-      { text: "足球反买别墅靠海——搏一搏单车变摩托", type: ["m", "P"] },
-      { text: "支持主队，顺手买注更有参与感", type: ["D", "p"] },
-      { text: "研究赔率和阵容，认真分析后才下手", type: ["A", "T"] },
-      { text: "朋友都买我不买，显得不合群", type: ["t", "d"] }
-    ]
-  },
-  {
-    question: "你混足球群主要是为了？",
-    options: [
-      { text: "看热闹不嫌事大，专吃别人的破防反应", type: ["t", "m"] },
-      { text: "和朋友一起看球边吐槽边嗨", type: ["P", "D"] },
-      { text: "潜水围观，偶尔冒泡发一张表情包", type: ["p", "d"] },
-      { text: "赛前讨论战术，赛后复盘分析", type: ["T", "A"] }
-    ]
-  },
-  {
-    question: "你手机里有哪些足球相关APP？",
-    options: [
-      { text: "懂球帝/虎扑，战术板和数据分析是常驻", type: ["T", "A"] },
-      { text: "买球APP天天签到，赛季进球率比主队还关注", type: ["m", "P"] },
-      { text: "微博超话每天签到，积分快满了", type: ["t", "d"] },
-      { text: "基本没有APP，电视打开看就行了", type: ["p", "d"] }
-    ]
-  },
-  {
-    question: "你支持某支球队的原因是什么？",
-    options: [
-      { text: "华丽进攻赏心悦目，防反太丑陋", type: ["T", "t"] },
-      { text: "队里有帅哥，颜狗的自我修养", type: ["t", "d"] },
-      { text: "小时候看了第一场比赛就爱上了，没有理由", type: ["D", "P"] },
-      { text: "室友支持哪队我就支持哪队，随大流", type: ["d", "p"] }
-    ]
-  },
-  {
-    question: "世界杯期间你最常出现的状态是？",
-    options: [
-      { text: "凌晨3点闹钟调好，咖啡红牛备足，通宵看球", type: ["P", "D"] },
-      { text: "第二天顶着黑眼圈上班，晚上继续熬", type: ["P", "m"] },
-      { text: "养生作息规律，最多看到晚上12点", type: ["p", "t"] },
-      { text: "世界杯跟平时一样，没什么特别的", type: ["d", "p"] }
-    ]
-  },
-  {
-    question: "你主队输球后，你会？",
-    options: [
-      { text: "发帖分析战术问题，数据角度复盘", type: ["A", "T"] },
-      { text: "发朋友圈吐槽，今天不想说话了", type: ["t", "P"] },
-      { text: "默默关掉电视，默念明年再来", type: ["d", "p"] },
-      { text: "嘴上说没事，心里已经买好明年季票", type: ["D", "m"] }
-    ]
-  },
-  {
-    question: "你对点球大战的态度是？",
-    options: [
-      { text: "捂着眼睛从指缝里偷看，心跳到嗓子眼", type: ["D", "p"] },
-      { text: "直接不敢看，躲到厨房假装干活", type: ["d", "p"] },
-      { text: "念咒语：我买的队必进——结果年年天台排队", type: ["m", "P"] },
-      { text: "拿手机记录点球瞬间，赛后做成表情包", type: ["t", "P"] }
-    ]
-  },
-  {
-    question: "当爆出大冷门时，你的第一反应是？",
-    options: [
-      { text: "我早说了！这队就是潜力股，黑马才是足球魅力", type: ["A", "m"] },
-      { text: "发帖：见证历史！截图发群发朋友圈", type: ["t", "P"] },
-      { text: "天台上人一多我反而觉得安心，终于不孤单了", type: ["m", "d"] },
-      { text: "默默关掉手机，世界如此玄幻我需要静静", type: ["d", "p"] }
-    ]
-  },
-  {
-    question: "你买过几件球衣？",
-    options: [
-      { text: "衣柜快爆炸了，按主客场和赛季分类存档", type: ["D", "T"] },
-      { text: "假的也穿，穿的就是情怀而不是球队", type: ["t", "d"] },
-      { text: "球衣是什么，能吃吗", type: ["p", "d"] },
-      { text: "队名都不知道，但看到打折还是买了件", type: ["d", "t"] }
-    ]
-  },
-  {
-    question: "你觉得世界杯最烦人的话题是？",
-    options: [
-      { text: "赌球输了跳楼，天台风景好——烂梗刷屏", type: ["t", "p"] },
-      { text: "一场论：这场输了就说明XX不行了", type: ["A", "T"] },
-      { text: "伪球迷蹭热度指指点点，懂球帝附体", type: ["t", "m"] },
-      { text: "无脑迷信豪门，随便奶，玄学治国", type: ["m", "t"] }
-    ]
-  },
-  {
-    question: "看球时你一般？",
-    options: [
-      { text: "准备啤酒零食，约朋友一起嗨", type: ["P", "t"] },
-      { text: "边看边和群友吐槽，嘴比解说还忙", type: ["t", "P"] },
-      { text: "一个人默默看，怕被别人的反应影响", type: ["d", "p"] },
-      { text: "打开战术板对照，先预测阵型再验证", type: ["T", "A"] }
-    ]
-  },
-  {
-    question: "你的足球知识主要来自？",
-    options: [
-      { text: "FM足球经理，数据背调比球探还专业", type: ["A", "T"] },
-      { text: "Football Daily等社媒搬运，玄学印象流", type: ["m", "t"] },
-      { text: "抖音集锦，十五分钟了解全场亮点", type: ["t", "d"] },
-      { text: "世界杯就够了，平时根本不关注联赛", type: ["d", "p"] }
-    ]
-  },
-  {
-    question: "如果用一句话形容你的看球状态？",
-    options: [
-      { text: "这场巴西稳了——说完巴西回家了", type: ["m", "t"] },
-      { text: "最后十分钟天台上挤满了人，就差我一个", type: ["P", "m"] },
-      { text: "从首发阵型到换人意图，比教练还懂球", type: ["T", "A"] },
-      { text: "我就看看不说话，你们继续", type: ["p", "d"] }
-    ]
-  },
-  {
-    question: "世界杯期间你的朋友圈一般发什么？",
-    options: [
-      { text: "比赛预告+结果分析，发完感觉自己像个博主", type: ["T", "A"] },
-      { text: "表情包+吐槽，金句频出，评论区比球赛精彩", type: ["t", "P"] },
-      { text: "买球截图，赢了晒单输了删帖", type: ["m", "t"] },
-      { text: "从不发，默默看默默嗨，低调看球人", type: ["p", "d"] }
-    ]
-  }
+  { q: "世界杯揭幕战，你会怎么获取资讯？", o: ["TPAD","tPAd","tpAD","tpd"] },
+  { q: "主队被绝杀那一刻，你在干嘛？", o: ["tpAD","tpmd","tPmd","TPAD"] },
+  { q: "你买足球彩票的原因是？", o: ["tpMd","tpAD","TPAm","tpd"] },
+  { q: "你混足球群主要是为了？", o: ["TpmD","tpAD","tpd","TPAD"] },
+  { q: "你手机里有哪些足球相关APP？", o: ["TPAD","tpMd","tPAd","tpd"] },
+  { q: "你支持某支球队的原因是什么？", o: ["TPAD","tPAd","tpAD","tpd"] },
+  { q: "世界杯期间你最常出现的状态是？", o: ["tpAD","tPmd","tpd","tpd"] },
+  { q: "你主队输球后，你会？", o: ["TPAD","tPAd","tpd","tpAD"] },
+  { q: "你对点球大战的态度是？", o: ["tpAD","tpd","tpMD","tPAd"] },
+  { q: "当爆出大冷门时，你的第一反应是？", o: ["TPAm","tPAd","tpMD","tpd"] },
+  { q: "你买过几件球衣？", o: ["tpAD","tPAd","tpd","tpd"] },
+  { q: "你觉得世界杯最烦人的话题是？", o: ["tpd","TPAD","tPAd","tpMD"] },
+  { q: "看球时你一般？", o: ["tpAD","tPAd","tpd","TPAD"] },
+  { q: "你的足球知识主要来自？", o: ["TPAm","tpMD","tPAd","tpd"] },
+  { q: "如果用一句话形容你的看球状态？", o: ["tpMD","tPmd","TPAD","tpd"] },
+  { q: "世界杯期间你的朋友圈一般发什么？", o: ["TPAD","tPAd","tpMd","tpd"] }
+];
+
+const questionTexts = [
+  "世界杯揭幕战，你会怎么获取资讯？",
+  "主队被绝杀那一刻，你在干嘛？",
+  "你买足球彩票的原因是？",
+  "你混足球群主要是为了？",
+  "你手机里有哪些足球相关APP？",
+  "你支持某支球队的原因是什么？",
+  "世界杯期间你最常出现的状态是？",
+  "你主队输球后，你会？",
+  "你对点球大战的态度是？",
+  "当爆出大冷门时，你的第一反应是？",
+  "你买过几件球衣？",
+  "你觉得世界杯最烦人的话题是？",
+  "看球时你一般？",
+  "你的足球知识主要来自？",
+  "如果用一句话形容你的看球状态？",
+  "世界杯期间你的朋友圈一般发什么？"
+];
+
+const optionTexts = [
+  [
+    "先看首发阵型图，边看边分析战术思路",
+    "等赛后集锦，直接看进球和搞笑片段",
+    "熬夜等全程直播，一场不落",
+    "第二天刷新闻看战报，了解个大概"
+  ],
+  [
+    "捂嘴深呼吸，怕吼出来吓到邻居",
+    "发一条「虽败犹荣」的朋友圈假装淡定",
+    "对着电视狂喊黑哨，然后摔遥控器",
+    "默默关掉电视，心算出线条件"
+  ],
+  [
+    "足球反买别墅靠海——搏一搏单车变摩托",
+    "支持主队，顺手买注更有参与感",
+    "研究赔率和阵容，认真分析后才下手",
+    "朋友都买我不买，显得不合群"
+  ],
+  [
+    "看热闹不嫌事大，专吃别人的破防反应",
+    "和朋友一起看球边吐槽边嗨",
+    "潜水围观，偶尔冒泡发一张表情包",
+    "赛前讨论战术，赛后复盘分析"
+  ],
+  [
+    "懂球帝/虎扑，战术板和数据分析是常驻",
+    "买球APP天天签到，赛季进球率比主队还关注",
+    "微博超话每天签到，积分快满了",
+    "基本没有APP，电视打开看就行了"
+  ],
+  [
+    "华丽进攻赏心悦目，防反太丑陋",
+    "队里有帅哥，颜狗的自我修养",
+    "小时候看了第一场比赛就爱上了，没有理由",
+    "室友支持哪队我就支持哪队，随大流"
+  ],
+  [
+    "凌晨3点闹钟调好，咖啡红牛备足，通宵看球",
+    "第二天顶着黑眼圈上班，晚上继续熬",
+    "养生作息规律，最多看到晚上12点",
+    "世界杯跟平时一样，没什么特别的"
+  ],
+  [
+    "发帖分析战术问题，数据角度复盘",
+    "发朋友圈吐槽，今天不想说话了",
+    "默默关掉电视，默念明年再来",
+    "嘴上说没事，心里已经买好明年季票了"
+  ],
+  [
+    "捂着眼睛从指缝里偷看，心跳到嗓子眼",
+    "直接不敢看，躲到厨房假装干活",
+    "念咒语：我买的队必进——结果年年天台排队",
+    "拿手机记录点球瞬间，赛后做成表情包"
+  ],
+  [
+    "我早说了！这队就是潜力股，黑马才是足球魅力",
+    "发帖：见证历史！截图发群发朋友圈",
+    "天台上人一多我反而觉得安心，终于不孤单了",
+    "默默关掉手机，世界如此玄幻我需要静静"
+  ],
+  [
+    "衣柜快爆炸了，按主客场和赛季分类存档",
+    "假的也穿，穿的就是情怀而不是球队",
+    "球衣是什么，能吃吗",
+    "队名都不知道，但看到打折还是买了件"
+  ],
+  [
+    "赌球输了跳楼，天台风景好——烂梗刷屏",
+    "一场论：这场输了就说明XX不行了",
+    "伪球迷蹭热度指指点点，懂球帝附体",
+    "无脑迷信豪门，随便奶，玄学治国"
+  ],
+  [
+    "准备啤酒零食，约朋友一起嗨",
+    "边看边和群友吐槽，嘴比解说还忙",
+    "一个人默默看，怕被别人的反应影响",
+    "打开战术板对照，先预测阵型再验证"
+  ],
+  [
+    "FM足球经理，数据背调比球探还专业",
+    "Football Daily等社媒搬运，玄学印象流",
+    "抖音集锦，十五分钟了解全场亮点",
+    "世界杯就够了，平时根本不关注联赛"
+  ],
+  [
+    "这场巴西稳了——说完巴西回家了",
+    "最后十分钟天台上挤满了人，就差我一个",
+    "从首发阵型到换人意图，比教练还懂球",
+    "我就看看不说话，你们继续"
+  ],
+  [
+    "比赛预告+结果分析，发完感觉自己像个博主",
+    "表情包+吐槽，金句频出，评论区比球赛精彩",
+    "买球截图，赢了晒单输了删帖",
+    "从不发，默默看默默嗨，低调看球人"
+  ]
 ];
 
 const personalityTypes: Record<string, {
@@ -214,22 +203,6 @@ const personalityTypes: Record<string, {
     bestTeam: "青春风暴型球队",
     worstMatch: "纯路人型",
     slogan: "足球是我的命。"
-  },
-  "TPd": {
-    name: "战术路人型",
-    tagline: "懂球但懒得关注，足球知识只用于关键时刻",
-    traits: [
-      "足球知识储备足够，但懒得主动追比赛",
-      "偶尔看一场能分析得头头是道，平时不关注联赛",
-      "看球时战术板随口就来，但不会主动找球赛",
-      "懂球但佛系，不会为了看球熬夜",
-      "经常说：「其实这场XXX踢得不错，但懒得看」"
-    ],
-    moment: "偶尔打开一场比赛，就能精准说出战术问题在哪。",
-    stars: 1,
-    bestTeam: "传控型球队",
-    worstMatch: "热血激情型",
-    slogan: "懂球但不痴，养生看球。"
   },
   "TpAD": {
     name: "花边球痴型",
@@ -296,8 +269,8 @@ const personalityTypes: Record<string, {
     slogan: "一个人看球叫看，一群人看球叫狂欢。"
   },
   "tPmD": {
-    name: "毒奶乐子人",
-    tagline: "看热闹+毒奶，看球就是为了热闹",
+    name: "玄学乐子人",
+    tagline: "看热闹+毒奶双修，专挑最稳的队奶",
     traits: [
       "看热闹不嫌事大，毒奶从来不失手",
       "专挑最稳的队奶，然后看他们崩盘",
@@ -364,9 +337,9 @@ const personalityTypes: Record<string, {
     tagline: "信则有不信则无，玄学才是第一生产力",
     traits: [
       "相信冥冥之中的力量，赛前必念咒（心理安慰）",
-      "看球靠玄学，分析靠第六感，赢了是预测准确输了是对手太强",
+      "看球靠玄学，分析靠第六感，赢了是预测准确输了是对手更强",
       "毒奶功力深厚，一口奶下去天台人都满了",
-      "名言：「这场巴西稳了」「法国今年必夺冠」——然后输了",
+      "名言：「这场巴西稳了」「法国今年必夺冠」——然后回家了",
       "你的预测就是反指路明灯"
     ],
     moment: "点球大战时嘴里念叨的咒语比VAR系统还复杂。",
@@ -424,7 +397,7 @@ const loadingTips = [
 export default function Home() {
   const [pageState, setPageState] = useState<PageState>('start');
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [scores, setScores] = useState({ T: 0, P: 0, A: 0, m: 0, D: 0, t: 0, p: 0, d: 0 });
+  const [answers, setAnswers] = useState<string[]>([]);
   const [resultCode, setResultCode] = useState('');
   const [result, setResult] = useState(personalityTypes['tPAd']);
   const [loadingTip, setLoadingTip] = useState(loadingTips[0]);
@@ -451,19 +424,14 @@ export default function Home() {
   function startQuiz() {
     setPageState('question');
     setCurrentQuestion(0);
-    setScores({ T: 0, P: 0, A: 0, m: 0, D: 0, t: 0, p: 0, d: 0 });
+    setAnswers([]);
   }
 
-  function handleAnswer(types: string[]) {
-    const newScores = { ...scores };
-    types.forEach(type => {
-      if (type in newScores) {
-        newScores[type as keyof typeof scores]++;
-      }
-    });
-    setScores(newScores);
+  function handleAnswer(code: string) {
+    const newAnswers = [...answers, code];
+    setAnswers(newAnswers);
 
-    if (currentQuestion < questions.length - 1) {
+    if (currentQuestion < 15) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       setPageState('loading');
@@ -476,28 +444,31 @@ export default function Home() {
 
       setTimeout(() => {
         clearInterval(tipInterval);
-        calculateResult(newScores);
+        calculateResult(newAnswers);
         setPageState('result');
       }, 2500);
     }
   }
 
-  function calculateResult(finalScores: typeof scores) {
-    // Each dimension has two poles. Compare poles within each pair.
-    // T vs t: if T > t, first char is T, else t
-    // P vs p: if P > p, second char is P, else p
-    // A vs m: if A > m, third char is A, else m
-    // D vs d: if D > d, fourth char is D, else d
+  function calculateResult(allAnswers: string[]) {
+    // Count how many times each personality code was selected
+    const counts: Record<string, number> = {};
+    allAnswers.forEach(code => {
+      counts[code] = (counts[code] || 0) + 1;
+    });
 
-    let code = '';
-    code += finalScores.T > finalScores.t ? 'T' : 't';
-    code += finalScores.P > finalScores.p ? 'P' : 'p';
-    code += finalScores.A > finalScores.m ? 'A' : 'm';
-    code += finalScores.D > finalScores.d ? 'D' : 'd';
+    // Find the personality with the most selections
+    let maxCount = -1;
+    let resultCode = 'tPAd';
+    Object.entries(counts).forEach(([code, count]) => {
+      if (count > maxCount) {
+        maxCount = count;
+        resultCode = code;
+      }
+    });
 
-    setResultCode(code);
-
-    const personality = personalityTypes[code] || personalityTypes['tPAd'];
+    setResultCode(resultCode);
+    const personality = personalityTypes[resultCode] || personalityTypes['tPAd'];
     setResult(personality);
 
     const starsArray = Array(5).fill(0).map((_, i) => (
@@ -593,8 +564,8 @@ ${result.traits.map(t => '• ' + t).join('\n')}
         </p>
         <div className="sample-codes">
           <span className="sample-code">TPAD</span>
-          <span className="sample-code">TpmD</span>
           <span className="sample-code">tpMD</span>
+          <span className="sample-code">tpAD</span>
           <span className="sample-code">tPAd</span>
         </div>
         <button className="start-btn" onClick={startQuiz}>
@@ -605,32 +576,32 @@ ${result.traits.map(t => '• ' + t).join('\n')}
   }
 
   function renderQuestionPage() {
-    const q = questions[currentQuestion];
+    const qIndex = currentQuestion;
     return (
       <div className="question-page">
         <div className="progress-container">
           <div className="progress-bar">
             <div
               className="progress-fill"
-              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+              style={{ width: `${((currentQuestion + 1) / 16) * 100}%` }}
             />
           </div>
-          <div className="progress-text">{currentQuestion + 1}/{questions.length}</div>
+          <div className="progress-text">{currentQuestion + 1}/16</div>
         </div>
         <div className={styles.questionCard}>
           <div className="question-number">第{currentQuestion + 1}题</div>
-          <div className="question-text">{q.question}</div>
+          <div className="question-text">{questionTexts[qIndex]}</div>
           <div className="options">
-            {q.options.map((opt, i) => {
+            {optionTexts[qIndex].map((text, i) => {
               const letters = ['A', 'B', 'C', 'D'];
               return (
                 <button
                   key={i}
                   className="option-btn"
-                  onClick={() => handleAnswer(opt.type)}
+                  onClick={() => handleAnswer(questions[qIndex].o[i])}
                 >
                   <span className="option-letter">{letters[i]}</span>
-                  <span>{opt.text}</span>
+                  <span>{text}</span>
                 </button>
               );
             })}
@@ -661,7 +632,7 @@ ${result.traits.map(t => '• ' + t).join('\n')}
           <div className="result-code">{resultCode}</div>
           <div className="result-name">{result.name}</div>
           <div className="result-tagline">{result.tagline}</div>
-          <button className="retake-btn" onClick={() => { setPageState('start'); setCurrentQuestion(0); setScores({ T: 0, P: 0, A: 0, m: 0, D: 0, t: 0, p: 0, d: 0 }); }}>
+          <button className="retake-btn" onClick={() => { setPageState('start'); setCurrentQuestion(0); setAnswers([]); }}>
             <span>🔄</span> 不满意？重新测试
           </button>
         </div>
