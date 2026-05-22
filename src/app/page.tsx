@@ -5,28 +5,12 @@ import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 import styles from './page.module.css';
 
-// 16种人格，每题直接对应一个人格代码
-// 16 questions × 4 options = 64 total mappings
-// Each personality code appears exactly 16 times (once per question)
-
-const questions = [
-  { q: "世界杯揭幕战，你会怎么获取资讯？", o: ["TPAD","tPAd","tpAD","tpd"] },
-  { q: "主队被绝杀那一刻，你在干嘛？", o: ["tpAD","tpmd","tPmd","TPAD"] },
-  { q: "你买足球彩票的原因是？", o: ["tpMd","tpAD","TPAm","tpd"] },
-  { q: "你混足球群主要是为了？", o: ["TpmD","tpAD","tpd","TPAD"] },
-  { q: "你手机里有哪些足球相关APP？", o: ["TPAD","tpMd","tPAd","tpd"] },
-  { q: "你支持某支球队的原因是什么？", o: ["TPAD","tPAd","tpAD","tpd"] },
-  { q: "世界杯期间你最常出现的状态是？", o: ["tpAD","tPmd","tpd","tpd"] },
-  { q: "你主队输球后，你会？", o: ["TPAD","tPAd","tpd","tpAD"] },
-  { q: "你对点球大战的态度是？", o: ["tpAD","tpd","tpMD","tPAd"] },
-  { q: "当爆出大冷门时，你的第一反应是？", o: ["TPAm","tPAd","tpMD","tpd"] },
-  { q: "你买过几件球衣？", o: ["tpAD","tPAd","tpd","tpd"] },
-  { q: "你觉得世界杯最烦人的话题是？", o: ["tpd","TPAD","tPAd","tpMD"] },
-  { q: "看球时你一般？", o: ["tpAD","tPAd","tpd","TPAD"] },
-  { q: "你的足球知识主要来自？", o: ["TPAm","tpMD","tPAd","tpd"] },
-  { q: "如果用一句话形容你的看球状态？", o: ["tpMD","tPmd","TPAD","tpd"] },
-  { q: "世界杯期间你的朋友圈一般发什么？", o: ["TPAD","tPAd","tpMd","tpd"] }
-];
+// 16种人格，四维双极
+const PERSONALITY_CODES = [
+  'TPAD', 'TPAm', 'TPD', 'TpAD', 'TpmD',
+  'tPAD', 'tPAd', 'tPmD', 'tPmA', 'tpAD',
+  'tpd', 'tpMD', 'tpMd', 'tPmd', 'tPAD2', 'TPAD2'
+] as const;
 
 const questionTexts = [
   "世界杯揭幕战，你会怎么获取资讯？",
@@ -47,7 +31,7 @@ const questionTexts = [
   "世界杯期间你的朋友圈一般发什么？"
 ];
 
-const optionTexts = [
+const optionTexts: string[][] = [
   [
     "先看首发阵型图，边看边分析战术思路",
     "等赛后集锦，直接看进球和搞笑片段",
@@ -379,6 +363,38 @@ const personalityTypes: Record<string, {
     bestTeam: "青春风暴型球队",
     worstMatch: "佛系养生型",
     slogan: "世界杯不疯狂，等于没看。"
+  },
+  "tPAD2": {
+    name: "淡定激情型",
+    tagline: "表面淡定内心狂热，真球迷里的伪装者",
+    traits: [
+      "看起来不关心，其实每场都在偷偷关注",
+      "主队赢了假装淡定，心里已经开香槟了",
+      "嘴上说无所谓，出线那一刻比谁都激动",
+      "深夜一个人看球，怕被发现自己有多在乎",
+      "经常说：「哎呀，不就是场球嘛」"
+    ],
+    moment: "主队绝杀时，你假装去上厕所，其实在厨房偷偷尖叫。",
+    stars: 3,
+    bestTeam: "防反型球队",
+    worstMatch: "纯路人型",
+    slogan: "我只是在看球，真的。"
+  },
+  "TPAD2": {
+    name: "淡定战术型",
+    tagline: "懂球帝里的隐藏型，默默分析不张扬",
+    traits: [
+      "看球时默默分析，从不和人大声争论",
+      "关键时刻才开口，一开口就直击要害",
+      "赛后复盘比谁都认真，但从不主动炫耀",
+      "懂球但低调，真正的球迷里的战斗机",
+      "经常说：「这场其实踢得还行」"
+    ],
+    moment: "大家都在骂教练的时候，你默默打开战术板开始分析。",
+    stars: 2,
+    bestTeam: "传控型球队",
+    worstMatch: "热血上头型",
+    slogan: "足球是用脑子看的。"
   }
 };
 
@@ -397,7 +413,7 @@ const loadingTips = [
 export default function Home() {
   const [pageState, setPageState] = useState<PageState>('start');
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<number[]>([]);
   const [resultCode, setResultCode] = useState('');
   const [result, setResult] = useState(personalityTypes['tPAd']);
   const [loadingTip, setLoadingTip] = useState(loadingTips[0]);
@@ -427,8 +443,8 @@ export default function Home() {
     setAnswers([]);
   }
 
-  function handleAnswer(code: string) {
-    const newAnswers = [...answers, code];
+  function handleAnswer(optionIndex: number) {
+    const newAnswers = [...answers, optionIndex];
     setAnswers(newAnswers);
 
     if (currentQuestion < 15) {
@@ -450,23 +466,14 @@ export default function Home() {
     }
   }
 
-  function calculateResult(allAnswers: string[]) {
-    // Count how many times each personality code was selected
-    const counts: Record<string, number> = {};
-    allAnswers.forEach(code => {
-      counts[code] = (counts[code] || 0) + 1;
-    });
+  function calculateResult(allAnswers: number[]) {
+    // 哈希算法：hash = Σ(answer[i] × 4^i) mod 16
+    let hash = 0;
+    for (let i = 0; i < allAnswers.length; i++) {
+      hash = (hash + allAnswers[i] * Math.pow(4, i)) % 16;
+    }
 
-    // Find the personality with the most selections
-    let maxCount = -1;
-    let resultCode = 'tPAd';
-    Object.entries(counts).forEach(([code, count]) => {
-      if (count > maxCount) {
-        maxCount = count;
-        resultCode = code;
-      }
-    });
-
+    const resultCode = PERSONALITY_CODES[hash];
     setResultCode(resultCode);
     const personality = personalityTypes[resultCode] || personalityTypes['tPAd'];
     setResult(personality);
@@ -598,7 +605,7 @@ ${result.traits.map(t => '• ' + t).join('\n')}
                 <button
                   key={i}
                   className="option-btn"
-                  onClick={() => handleAnswer(questions[qIndex].o[i])}
+                  onClick={() => handleAnswer(i)}
                 >
                   <span className="option-letter">{letters[i]}</span>
                   <span>{text}</span>
